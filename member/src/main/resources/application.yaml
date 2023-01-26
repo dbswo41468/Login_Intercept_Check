@@ -1,0 +1,60 @@
+## MYSQL
+## datasource: 와 jpa: 는 같은 선상에 있어야된다
+
+## 개발모드 , 운영모드 나누기
+## yaml과 프로퍼티스와 방법이 다르다
+
+application:
+  version: v0.0.1
+  title: 캠핑ON
+
+spring:
+  profiles:
+    ## dev를 작성하면 dev로 변경된다
+    ## 작성한 이름으로 개발 환경이 달라진다
+    active: dev
+
+  # aws:
+  #   s3:
+  #     access-id:  (csv id 키 입력)
+  #     access-pw:  (csv Secret access key 키 입력)
+  #     bucket:  (버킷 이름 작성)
+
+aws:
+  s3:
+    access-id: 
+    access-pw: 
+    bucket: 
+
+## --- = 문법
+---
+spring:
+  ## 이름 설정
+  ## dev = 개발모드일 때 자주 쓰는 이름
+  profiles: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dw_501
+    username: root
+    password: enenqn13!
+  jpa:
+    database: mysql
+    generate-ddl: true
+    hibernate.ddl.auto: update
+    show-sql: true
+---
+spring:
+  ## 이름 설정
+  ## env = 운영모드일 때 자주 쓰는 이름
+  profiles: env
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    ## 주소 다르게 해주기
+    url: jdbc:mysql://database-1.ctci74b4ljqg.ap-northeast-2.rds.amazonaws.com
+    username: root
+    password: enenqn13!
+  jpa:
+    database: mysql
+    generate-ddl: true
+    hibernate.ddl.auto: update
+    show-sql: true

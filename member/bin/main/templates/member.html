@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>DW 게시판</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			margin-top: 70px;
+			background-color: #119208;
+		}
+
+		#container {
+			margin: 0 auto;
+			width: 1200px;
+		}
+
+		button {
+			width: 170px;
+			height: 60px;
+			font-size: 22px;
+			font-weight: 700;
+			border: 1px solic black;
+			border-radius: 7px;
+		}
+
+		button:hover {
+			cursor: pointer;
+		}
+
+		table {
+			margin: 0 auto;
+			width: 1200px;
+			font-family: arial, sans-serif;
+			border-collapse: collapse;
+			width: 1200px;
+			margin-top: 50px;
+		}
+
+		h1 {
+			text-align: center;
+			font-size: 50px;
+		}
+
+		.button {
+			text-align: right;
+		}
+
+		td,
+		th {
+			border: 1px solid black;
+			text-align: left;
+			padding: 8px;
+			text-align: center;
+			height: 28px;
+			font-size: 20px;
+		}
+
+		th {
+			background-color: #ffe4b5
+		}
+
+		tr:nth-child(even) {
+			background-color: #dddddd;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="button">
+		<input id="id" placeholder="게시판 번호 입력">
+		<button type="button" onclick="dodelete()">삭제하기</button>
+
+		<input type="text" id="u_id" placeholder="id 입력"> 
+		<input type="text" id="u_name" placeholder="이름 입력">
+		<input type="text" id="u_age" placeholder="나이 입력">
+		<input type="text" id="u_dept" placeholder="부서 번호 입력">
+		<button type="button" onclick="doupdate()">수정하기</button>
+
+
+		<input type="text" id="a_name" placeholder="이름 입력">
+		<input type="text" id="a_age" placeholder="나이 입력">
+		<input type="text" id="a_dept" placeholder="부서 번호 입력">
+		<button type="button" onclick="doadd()"> 추가하기 </button>
+	</div>
+
+	<div id="member">
+		<h1>멤버 게시판</h1>
+		<div id="table_wrap">
+			<table id="members">
+				<th>게시판 번호</th>
+				<th>게시판 제목</th>
+				<th>작성자</th>
+				<th>부서이름</th>
+			</table>
+		</div>
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+	crossorigin="anonymous"></script>
+<script type="text/javascript">
+	callAPI(); // 함수 호출
+
+	// 조회
+	function callAPI() {
+
+		// ajax : 백엔드와 프론트가 통신하는 기능!
+		// dataType : return 데이터를 json으로 받음
+		$.ajax({
+			url: '/member',
+			type: 'GET',
+			contentType: 'application/json',
+			dataType: 'json',
+			success: function (response) {
+				for (var i in response) {
+					tr = $('<tr></tr>');
+
+					var id = $('<td>' + response[i].id + '</td>');
+					var name = $('<td>' + response[i].name + '</td>');
+					var age = $('<td>' + response[i].age + '</td>');
+					// 조인 후 부서 이름 가져오기
+					var dname = $('<td>' + response[i].dept.dname + '</td>');
+
+					tr.append(id);
+					tr.append(name);
+					tr.append(age);
+					tr.append(dname);
+
+					$("#members").append(tr);
+				}
+			}
+		});
+	}
+
+	// 삭제
+	function dodelete() {
+		var id = $("#id").val();
+
+		$.ajax({
+			url: '/member/' + id,
+			type: 'DELETE',
+			dataType: 'json',
+			success: function (response) {
+				alert("삭제");
+				console.log(response)
+				location.reload();
+			}
+		});
+	}
+	// 수정
+	function doupdate() {
+
+		var id = $("#u_id").val();
+		var name = $("#u_name").val();
+		var age = $("#u_age").val();
+		var dept = $("#u_dept").val();
+
+		var data = {
+			"id": id,
+			"name": name,
+			"age": age,
+			"dept" : {
+				"id" : dept
+			}
+
+		};
+		$.ajax({
+			url: '/member',
+			type: 'PATCH',
+			contentType: 'application/json',
+			data: JSON.stringify(data),
+			dataType: 'json',
+			success: function (response) {
+				alert("수정");
+				location.reload();
+			}
+		});
+	}
+
+	// 추가
+	function doadd() {
+		var name = $("#a_name").val();
+		var age = $("#a_age").val();
+		var dept = $("#a_dept").val();
+
+		var data = {
+			"name": name,
+			"age": age,
+			"dept": {
+				"id": dept
+			}
+
+		};
+
+		$.ajax({
+			url: '/member',
+			type: 'POST',
+			contentType: 'application/json', // 서버에 json 타입으로 보낼 예정 (요청)
+			data: JSON.stringify(data),
+			dataType: 'json',
+			success: function (response) {
+				alert("추가 완료");
+				location.reload(); // 강제 새로고침
+			}
+		});
+	}
+</script>
+
+</html>
